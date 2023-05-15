@@ -6,6 +6,7 @@ app = Flask(__name__)
 # Set the secret key for the app
 app.secret_key = 'your_secret_key_here'
 
+
 @app.route('/')
 def index():
     # Check if the user is logged in
@@ -15,7 +16,7 @@ def index():
             host='localhost',
             user='root',
             password='2403',
-            db='vaseistest1',
+            db='vaseistest',
             charset='utf8mb4',
             cursorclass=pymysql.cursors.DictCursor
         )
@@ -34,6 +35,7 @@ def index():
     else:
         return redirect(url_for('login'))
 
+
 @app.route('/student')
 def about():
     # Check if the user is logged in
@@ -43,7 +45,7 @@ def about():
             host='localhost',
             user='root',
             password='2403',
-            db='vaseistest1',
+            db='vaseistest',
             charset='utf8mb4',
             cursorclass=pymysql.cursors.DictCursor
         )
@@ -61,6 +63,7 @@ def about():
     else:
         return redirect(url_for('login'))
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     # Check if the user is already logged in
@@ -73,7 +76,7 @@ def login():
             host='localhost',
             user='root',
             password='2403',
-            db='vaseistest1',
+            db='vaseistest',
             charset='utf8mb4',
             cursorclass=pymysql.cursors.DictCursor
         )
@@ -101,10 +104,6 @@ def login():
     else:
         return render_template('login.html')
 
-#@app.route('/logout', methods=['POST'])
-#def logout():
- #   session.clear()
-  #  return redirect(url_for('logout'))
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
@@ -113,6 +112,19 @@ def logout():
     return redirect(url_for('login'))
 
 
+@app.route('/rent')
+def rent():
+    return render_template('rent.html')
+
+
+@app.route('/rate')
+def rate():
+    return render_template('rate.html')
+
+
+@app.route('/school')
+def school():
+    return render_template('school.html')
 
 
 if __name__ == '__main__':
