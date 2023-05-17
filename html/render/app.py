@@ -16,7 +16,7 @@ def index():
             host='localhost',
             user='root',
             password='2403',
-            db='vaseistest',
+            db='vas',
             charset='utf8mb4',
             cursorclass=pymysql.cursors.DictCursor
         )
@@ -45,7 +45,7 @@ def about():
             host='localhost',
             user='root',
             password='2403',
-            db='vaseistest',
+            db='vas',
             charset='utf8mb4',
             cursorclass=pymysql.cursors.DictCursor
         )
@@ -76,7 +76,7 @@ def login():
             host='localhost',
             user='root',
             password='2403',
-            db='vaseistest',
+            db='vas',
             charset='utf8mb4',
             cursorclass=pymysql.cursors.DictCursor
         )
@@ -125,6 +125,29 @@ def rate():
 @app.route('/school')
 def school():
     return render_template('school.html')
+
+@app.route('/delayed')
+def delayed():
+    if 'username' in session:
+
+        conn = pymysql.connect(
+            host='localhost',
+            user='root',
+            password='2403',
+            db='vas',
+            charset='utf8mb4',
+            cursorclass=pymysql.cursors.DictCursor
+        )
+
+        with conn.cursor() as cursor:
+            sql = 'SELECT * FROM borrow'
+            cursor.execute(sql)
+            data = cursor.fetchall()
+
+        conn.close()
+
+        return render_template('delayed.html', data=data)
+    else: return redirect(url_for('login'))
 
 
 if __name__ == '__main__':
