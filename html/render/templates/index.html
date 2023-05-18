@@ -29,6 +29,23 @@
       .nav-bar .nav-item:last-child {
         margin-right: 0;
       }
+      .container {
+        margin-top: 20px;
+      }
+      .content-block {
+        background-color: purple;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        color: #000;
+      }
+      .title-container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
     </style>
   </head>
   <body>
@@ -44,10 +61,11 @@
           <button type="submit">Logout</button>
         </form>
       </div>
-      <div class="container">
+      <div class="container content-block">
         {% block content %}
-        <h1>Home</h1>
-        <p>This is the home page.</p>
+        <div class="title-container">
+          <h1 style="color: black">This is the home page</h1>
+        </div>
         {% endblock %}
       </div>
     </div>
