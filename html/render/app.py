@@ -4,26 +4,26 @@ import pymysql
 app = Flask(__name__)
 
 # Set the secret key for the app
-app.secret_key = 'your_secret_key_here'
+app.secret_key = "your_secret_key_here"
 
 
-@app.route('/')
+@app.route("/")
 def index():
     # Check if the user is logged in
-    if 'username' in session:
+    if "username" in session:
         # Connect to the database
         conn = pymysql.connect(
-            host='localhost',
-            user='root',
-            password='2403',
-            db='vas',
-            charset='utf8mb4',
-            cursorclass=pymysql.cursors.DictCursor
+            host="localhost",
+            user="root",
+            password="2403",
+            db="vas",
+            charset="utf8mb4",
+            cursorclass=pymysql.cursors.DictCursor,
         )
 
         # Execute the query to retrieve data from the database
         with conn.cursor() as cursor:
-            sql = 'SELECT * FROM user'
+            sql = "SELECT * FROM user"
             cursor.execute(sql)
             data = cursor.fetchall()
 
@@ -31,59 +31,59 @@ def index():
         conn.close()
 
         # Render the HTML template and pass the data to it
-        return render_template('index.html', data=data)
+        return render_template("index.html", data=data)
     else:
-        return redirect(url_for('login'))
+        return redirect(url_for("login"))
 
 
-@app.route('/student')
+@app.route("/student")
 def about():
     # Check if the user is logged in
-    if 'username' in session:
+    if "username" in session:
         # Connect to the database
         conn = pymysql.connect(
-            host='localhost',
-            user='root',
-            password='2403',
-            db='vas',
-            charset='utf8mb4',
-            cursorclass=pymysql.cursors.DictCursor
+            host="localhost",
+            user="root",
+            password="2403",
+            db="vas",
+            charset="utf8mb4",
+            cursorclass=pymysql.cursors.DictCursor,
         )
 
         # Execute the query to retrieve data from the database
         with conn.cursor() as cursor:
-            sql = 'SELECT * FROM student'
+            sql = "SELECT * FROM student"
             cursor.execute(sql)
             data = cursor.fetchall()
 
         # Close the database connection
         conn.close()
 
-        return render_template('student.html', data=data)
+        return render_template("student.html", data=data)
     else:
-        return redirect(url_for('login'))
+        return redirect(url_for("login"))
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     # Check if the user is already logged in
-    if 'username' in session:
-        return redirect(url_for('index'))
+    if "username" in session:
+        return redirect(url_for("index"))
 
-    if request.method == 'POST':
+    if request.method == "POST":
         # Connect to the database
         conn = pymysql.connect(
-            host='localhost',
-            user='root',
-            password='2403',
-            db='vas',
-            charset='utf8mb4',
-            cursorclass=pymysql.cursors.DictCursor
+            host="localhost",
+            user="root",
+            password="2403",
+            db="vas",
+            charset="utf8mb4",
+            cursorclass=pymysql.cursors.DictCursor,
         )
 
         # Get username and password from form submission
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form["username"]
+        password = request.form["password"]
 
         # Query database for user
         with conn.cursor() as cursor:
@@ -96,59 +96,218 @@ def login():
 
         if result:
             # If user exists, store username in session and redirect to home page
-            session['username'] = username
-            return redirect(url_for('index'))
+            session["username"] = username
+            return redirect(url_for("index"))
         else:
             # If user does not exist, redirect back to login page with error message
-            return render_template('login.html', error='Invalid username or password')
+            return render_template("login.html", error="Invalid username or password")
     else:
-        return render_template('login.html')
+        return render_template("login.html")
 
 
-@app.route('/logout', methods=['GET', 'POST'])
+@app.route("/logout", methods=["GET", "POST"])
 def logout():
-    session.pop('username', None)
-    flash('You were logged out')
-    return redirect(url_for('login'))
+    session.pop("username", None)
+    flash("You were logged out")
+    return redirect(url_for("login"))
 
 
-@app.route('/rent')
+@app.route("/rent")
 def rent():
-    return render_template('rent.html')
+    return render_template("rent.html")
 
 
-@app.route('/rate')
+@app.route("/rate", methods=["GET", "POST"])
 def rate():
-    return render_template('rate.html')
-
-
-@app.route('/school')
-def school():
-    return render_template('school.html')
-
-@app.route('/delayed')
-def delayed():
-    if 'username' in session:
+    if "username" in session:
+        username = session["username"]
+        book_id = request.form.get("book_id")
+        rating = request.form.get("rating")
 
         conn = pymysql.connect(
-            host='localhost',
-            user='root',
-            password='2403',
-            db='vas',
-            charset='utf8mb4',
-            cursorclass=pymysql.cursors.DictCursor
+            host="localhost",
+            user="root",
+            password="2403",
+            db="vas",
+            charset="utf8mb4",
+            cursorclass=pymysql.cursors.DictCursor,
         )
 
         with conn.cursor() as cursor:
-            sql = 'SELECT * FROM borrow'
+            # Retrieve the user_id based on the username
+            sql = f"SELECT id FROM user WHERE username = '{username}'"
+            cursor.execute(sql)
+            result = cursor.fetchone()
+            user_id = result["id"]
+
+            # Insert the rating into the ratings table
+            sql = "INSERT INTO ratings (user_id, book_id, rating) VALUES (%s, %s, %s)"
+            cursor.execute(sql, (user_id, book_id, rating))
+
+        conn.commit()
+        conn.close()
+
+        return redirect(url_for("rating"))
+    else:
+        return redirect(url_for("login"))
+
+
+@app.route("/school")
+def school():
+    if "username" in session:
+        conn = pymysql.connect(
+            host="localhost",
+            user="root",
+            password="2403",
+            db="vas",
+            charset="utf8mb4",
+            cursorclass=pymysql.cursors.DictCursor,
+        )
+
+        with conn.cursor() as cursor:
+            sql = "SELECT * from book_inventory_view;"
+            cursor.execute(sql)
+            data = cursor.fetchall()
+            school_ids = [item["school_id"] for item in data]
+
+        conn.close()
+
+        return render_template("school.html", school_ids=school_ids, data=data)
+    else:
+        return redirect(url_for("login"))
+
+
+@app.route("/delayed")
+def delayed():
+    if "username" in session:
+        conn = pymysql.connect(
+            host="localhost",
+            user="root",
+            password="2403",
+            db="vas",
+            charset="utf8mb4",
+            cursorclass=pymysql.cursors.DictCursor,
+        )
+
+        with conn.cursor() as cursor:
+            sql = "SELECT * FROM borrow"
             cursor.execute(sql)
             data = cursor.fetchall()
 
         conn.close()
 
-        return render_template('delayed.html', data=data)
-    else: return redirect(url_for('login'))
+        return render_template("delayed.html", data=data)
+    else:
+        return redirect(url_for("login"))
 
 
-if __name__ == '__main__':
+@app.route("/users")
+def users():
+    if "username" in session:
+        conn = pymysql.connect(
+            host="localhost",
+            user="root",
+            password="2403",
+            db="vas",
+            charset="utf8mb4",
+            cursorclass=pymysql.cursors.DictCursor,
+        )
+
+        with conn.cursor() as cursor:
+            sql = "SELECT u.username, u.first_name, u.last_name, CASE r.role WHEN 1 THEN 'student' WHEN 2 THEN 'professor' WHEN 3 THEN 'admin' ELSE 'unknown' END AS role_label FROM user u JOIN role r ON u.id = r.user_id ORDER BY r.role ASC;"
+            cursor.execute(sql)
+            data = cursor.fetchall()
+
+        conn.close()
+
+        return render_template("users.html", data=data)
+    else:
+        return redirect(url_for("login"))
+
+
+@app.route("/add_user", methods=["GET", "POST"])
+def add_user():
+    if request.method == "POST":
+        # Retrieve the form data
+        username = request.form["username"]
+        password = request.form["password"]
+        num_books = int(request.form["num_books"])
+        active = int(request.form["active"])
+        last_name = request.form["last_name"]
+        first_name = request.form["first_name"]
+        age = int(request.form["age"])
+
+        conn = pymysql.connect(
+            host="localhost",
+            user="root",
+            password="2403",
+            db="vas",
+            charset="utf8mb4",
+            cursorclass=pymysql.cursors.DictCursor,
+        )
+
+        try:
+            # Create a cursor object to interact with the database
+            with conn.cursor() as cursor:
+                # Prepare the SQL statement
+                sql = (
+                    "INSERT INTO user (username, password, num_books, active, last_name, first_name, age) "
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                )
+                print(username, first_name, last_name, password, num_books, active, age)
+
+                # Execute the SQL statement
+                cursor.execute(
+                    sql,
+                    (username, password, num_books, active, last_name, first_name, age),
+                )
+
+            # Commit the transaction
+            conn.commit()
+
+            # Redirect to a success page or any other desired page
+            return render_template("add_user_success.html")
+
+        except Exception as e:
+            # Handle the error, rollback the transaction, or display an error message
+            print(f"Error: {e}")
+            conn.rollback()
+            # Redirect to an error page or display an error message to the user
+            return render_template("add_user_fail.html")
+
+        finally:
+            # Close the database connection
+            conn.close()
+
+        # Redirect to a success page or any other desired page
+
+    # Render the add_user.html template for GET requests
+    return render_template("add_user.html")
+
+
+@app.route("/rating")
+def rating():
+    if "username" in session:
+        conn = pymysql.connect(
+            host="localhost",
+            user="root",
+            password="2403",
+            db="vas",
+            charset="utf8mb4",
+            cursorclass=pymysql.cursors.DictCursor,
+        )
+
+        with conn.cursor() as cursor:
+            sql = "SELECT b.titleBK, b.ISBN, AVG(r.rating) AS average_rating FROM book b LEFT JOIN ratings r ON b.ISBN = r.book_id GROUP BY b.titleBK, b.ISBN;"
+            cursor.execute(sql)
+            data = cursor.fetchall()
+
+        conn.close()
+
+        return render_template("rating.html", data=data)
+    else:
+        return redirect(url_for("login"))
+
+
+if __name__ == "__main__":
     app.run(debug=True)
