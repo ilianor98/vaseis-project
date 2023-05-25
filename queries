@@ -74,7 +74,15 @@ insert into reservation (book_id, user_id, reservation_status, reservation_date,
 select u.first_name, u.last_name, c.category_id from user u inner join role l on u.id = l.user_id inner join reservation r on u.id = r.user_id inner join book_category c on r.book_id = c.book_id where u.age < 40 and l.role = 2 and c.category_id = 2;
 
 
+create view book_inventory_view as select b.titleBK, b.ISBN, s.school_id, s.inventory from book b join book_school s on b.ISBN = s.book_id;
 
 
-
+INSERT INTO ratings (book_id, user_id, rating)
+SELECT b.ISBN, u.id, FLOOR(RAND() * 5) + 1
+FROM book b
+CROSS JOIN (SELECT id FROM user ORDER BY RAND() LIMIT 5) u
+WHERE (
+  SELECT COUNT(*) FROM ratings r
+  WHERE r.book_id = b.ISBN
+) < 5;
 
