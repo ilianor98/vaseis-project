@@ -16,8 +16,8 @@ app = Flask(__name__)
 app.secret_key = "your_secret_key_here"
 
 config = {
-    "user": "root",
-    "password": "2403",
+    "user": "****",
+    "password": "****",
     "host": "localhost",
     "database": "vas",
     "charset": "utf8mb4",
