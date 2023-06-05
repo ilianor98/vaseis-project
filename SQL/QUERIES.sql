@@ -117,7 +117,14 @@ WHERE r.return_date IS NULL
 
 3.2.3
 
-select u.first_name, u.last_name, c.category 
+SELECT u.first_name, u.last_name, c.category, AVG(r.rating) 
+FROM user u
+LEFT JOIN ratings r ON u.id = r.user_id
+JOIN book_category bc ON r.book_id = bc.book_id
+JOIN category c ON bc.category_id = c.id
+WHERE u.id = 100
+AND c.id = 1
+ORDER BY c.category;
 
 3.3.1
 
