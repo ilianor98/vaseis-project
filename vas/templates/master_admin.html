@@ -1,0 +1,32 @@
+{% extends "index.html" %} {% block content %}
+<h1>Welcome, Master Admin: {{admin_name}}!</h1>
+<p>
+  What would you like to do today?
+  <p>
+    <div class="container content-block">
+      <div class="inner-container1">
+        <h2>ADMINS</h2>
+        <p>View or edit admins.</p>
+        <a href="/admins" class="button">View admins</a>
+        <a href="/admins_edit" class="button">Edit admins</a>
+      </div>
+      <div class="inner-container1">
+        <h2>BACKUP</h2>
+        <p>Backup the database.</p>
+        <a href="/backup_interface" class="button">Backup inteface</a>
+      </div>
+      
+    </div>
+  </p>
+</p>
+<style>
+    .content-block .inner-container1 {
+        flex-basis: calc(40% - 20px);
+        background-color: #d3d3d3;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        margin-right: 10px;
+      }
+    </style>
+{% endblock %}
